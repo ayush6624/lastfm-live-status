@@ -12,7 +12,7 @@ type Song = {
 type Response = {
   status: boolean,
   message?: string,
-  song?: Song
+  data?: Song | Song[];
 }
 
 export { config };

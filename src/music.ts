@@ -1,23 +1,23 @@
-import { config, Response } from './config.js';
+import { config, Response, Song } from './config.js';
 import fetch from 'node-fetch';
 
-const LASTFM_API_URL = ['https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks', 'format=json', 'limit=1', 'user=' + config.LASTFM_USERNAME, 'api_key=' + process.env.LASTFM_API_KEY].join('&');
+const getUrl = ({ limit = 5 }): string => {
+    return `https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=${config.LASTFM_USERNAME}&api_key=${config.LASTFM_API_KEY}&format=json&limit=${limit}`;
+}
 
-const getNowPlaying = async (): Promise<string | Response> => {
-    const res = await fetch(LASTFM_API_URL);
+const getNowPlaying = async (): Promise<Response> => {
+    const res = await fetch(getUrl({ limit: 1 }));
     const json = await res.json() as any;
-    console.log('track ->', json.recenttracks.track)
     try {
         const [track] = json.recenttracks.track; // grab the first element of the array
         if (!(track['@attr'] && track['@attr'].nowplaying)) return {
             status: false,
             message: "Nothing is playing right now"
         };
-        console.log('ims -', track.image)
 
         const song: Response = {
             status: true,
-            song: {
+            data: {
                 name: track.name,
                 artist: track.artist['#text'],
                 img: track.image[3]['#text'],
@@ -25,7 +25,7 @@ const getNowPlaying = async (): Promise<string | Response> => {
         };
         return song;
     } catch (err) {
-        console.log('#',err);
+        console.log('#', err);
         return {
             status: false,
             message: `Something went wrong!`,
@@ -33,4 +33,23 @@ const getNowPlaying = async (): Promise<string | Response> => {
     }
 };
 
-export default getNowPlaying
+const getRecentTracks = async (): Promise<Response> => {
+    const res = await fetch(getUrl({ limit: 5 }));
+    const json = await res.json() as any;
+    const tracks = json.recenttracks.track;
+
+    const songs: Song[] = tracks.map((track: any) => (
+        {
+            name: track.name,
+            artist: track.artist['#text'],
+            img: track.image[3]['#text'],
+        }
+    ));
+
+    return {
+        status: true,
+        data: songs,
+    }
+}
+
+export { getNowPlaying, getRecentTracks, getUrl }
