@@ -1,15 +1,11 @@
-# Simple TypeScript Starter
+# Ayush's music tracker
 
-> Bare minimum TypeScript project template to get started quickly.
+> Bare minimum TypeScript+Express project
 
-A bare minimum, no-frills TypeScript starter template with development/production scripts and linting included.
+## Endpoints
+- `/live`: Get the currently playing music
+- `/recent-tracks`: Last 5 played music tracks
 
-- Nodemon + `ts-node` for development
-- `tsc` for building production distribution
-
-Entry file: `src/main.ts`.
-
-## Get Started
 
 ## License
 
