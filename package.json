@@ -1,5 +1,4 @@
 {
-  "private": true,
   "module": "ES2020",
   "type": "module",
   "scripts": {
